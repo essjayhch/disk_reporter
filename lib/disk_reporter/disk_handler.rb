@@ -110,7 +110,6 @@ class Partition
     # puts "FS: #{fs}"
     # puts response
     if fs?
-      
       resp = response.scan(BLKID_REGEX)
       if resp && resp[0]
         self.uuid = resp[0][0]
@@ -132,11 +131,15 @@ class Parser
     populate
   end
 
-
   def to_h
-    { disks: devices.to_h }
+    disks = []
+    devices.each do |d|
+      disks << d.to_h
+    end
+    { disks: disks }
   end
-  private 
+
+  private
 
   def scan_disks
      ds = []

@@ -4,10 +4,10 @@ $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'disk_reporter/version'
 
 Gem::Specification.new do |spec|
-  spec.name          = "ceph_disk_reporter"
+  spec.name          = "disk_reporter"
   spec.version       = DiskReporter::VERSION
   spec.authors       = ["Stuart Harland"]
-  spec.email         = ["s.harland@livelinktechnology.net"]
+  spec.email         = ["s.harland@livelinktechnology.net", "essjayhch@gmail.com"]
   spec.description   = %q{Uses sas2ircu and blkid to determine the status of various disks attached to our JBODS}
   spec.summary       = spec.description
   spec.homepage      = ""

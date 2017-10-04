@@ -1,0 +1,58 @@
+#!/usr/bin/env ruby
+require 'disk_reporter'
+require 'colorize'
+class DiskDisplay
+
+  attr_accessor :disks, :sas2ircu
+  def initialize
+    self.sas2ircu = Sas2ircu::Parser.new
+    self.disks = DiskHandler::Parser.new
+  end
+
+  def do_something
+    sas2ircu.cards.each do |card_id, card|
+         puts "card: #{card_id}"
+      card.backplanes.each do |backplane_id, backplane|
+         puts "    backplane: #{backplane_id}"
+        backplane.expand_slots.slots.each do |slot_id, slot|
+          if slot.empty?
+            puts "        slot: #{slot_id}, EMPTY".yellow
+          else
+            disk_object = disks.devices.find { |d|  d.wnn == slot.guid }
+            puts "        slot: #{slot_id}, wnn: #{slot.guid}, serial: #{slot.serial_no}"
+            if disk_object
+              puts "            #{disk_object.name}"
+              puts "            No Partitions".red if disk_object.partitions.empty?
+              disk_object.partitions.each do |partition|
+                puts "            Partition: #{partition.name}"
+                if partition.fs?
+                  puts "                UUID: #{partition.uuid}, TYPE: #{partition.type}"
+                  if partition.mounted?
+                    puts "                Mounted at: #{partition.mounted}"
+                  else
+                    puts "                Not Mounted".red
+                  end
+                  if partition.is_ceph?
+                    puts "                Has Ceph"
+                    if partition.should_have_ceph?
+                      puts "                OK".green
+                    else
+                      puts "                SHOULD NOT HAVE CEPH"
+                    end
+                  else
+                    puts "                No Ceph".yellow
+                  end
+                else
+                   puts "              No Filesystem".green
+                end
+              end
+            else
+              puts "            Disk is not known to kernel".red
+            end
+          end
+        end
+      end
+    end
+  end
+end
+DiskDisplay.new.do_something

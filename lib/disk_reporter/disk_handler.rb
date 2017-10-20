@@ -18,7 +18,7 @@ class Disk
 
   def initialize lsblk_line
     attrs_from_line lsblk_line
-    check_smart_capability
+    check_smart_capability!
     check_health! if smart_capable?
     parse_smart_info if smart_capable?
     populate_partitions

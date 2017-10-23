@@ -3,7 +3,7 @@ require 'json'
 module DiskHandler
 class Disk
   attr_accessor :name, :type, :size, :model, :state, :id, :number, :version, :partitions
- 
+
   def device_path
     "/dev/#{name}"
   end
@@ -13,7 +13,7 @@ class Disk
   end
 
   def wnn
-    id.delete(' ')
+    id.delete(' ') unless id.nil?
   end
 
   def initialize lsblk_line
@@ -48,14 +48,14 @@ class Disk
     @smart_healthy = !output.scan(/PASSED/).empty?
     @health_output = output
   end
-  
+
   # Parses SMART drive info
   #
   def parse_smart_info
      %w{Id Number Version}.each do |key|
        matches = @capability_output.match(/#{key}:\s+([^\n]*)\n/)
        self.send("#{key.downcase}=", matches[1]) if matches
-     end    
+     end
   end
   # Checks if disk is capable
   #
@@ -67,7 +67,7 @@ class Disk
   end
 
   def to_h
-    { name: name, size: size, model: model, smart_available: @smart_available, smart_enabled: @smart_enabled, wnn: wnn, serial: serial_number, version: version 
+    { name: name, size: size, model: model, smart_available: @smart_available, smart_enabled: @smart_enabled, wnn: wnn, serial: serial_number, version: version
      }
   end
 

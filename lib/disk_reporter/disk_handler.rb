@@ -65,7 +65,7 @@ class Disk
   # Checks if disk is capable
   #
   def check_smart_capability!
-    output = `#{SMARTCTRL} -i #{device_path}`
+    output = `#{SMARTCTL} -i #{device_path}`
     @smart_available = !output.scan(/SMART support is: Available/).empty?
     @smart_enabled = !output.scan(/SMART support is: Enabled/).empty?
     @capability_output = output

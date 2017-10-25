@@ -49,7 +49,7 @@ class Disk
   # Check the SMART health
   #
   def check_health!
-    output = `sudo #{SMARTCTL} -H #{device_path}`
+    output = `#{SMARTCTL} -H #{device_path}`
     @smart_healthy = !output.scan(/PASSED/).empty?
     @health_output = output
   end
@@ -65,7 +65,7 @@ class Disk
   # Checks if disk is capable
   #
   def check_smart_capability!
-    output = `sudo #{SMARTCTRL} -i #{device_path}`
+    output = `#{SMARTCTRL} -i #{device_path}`
     @smart_available = !output.scan(/SMART support is: Available/).empty?
     @smart_enabled = !output.scan(/SMART support is: Enabled/).empty?
     @capability_output = output

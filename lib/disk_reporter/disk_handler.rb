@@ -1,5 +1,10 @@
 #!/bin/env ruby
 require 'json'
+
+SMARTCTL = '/usr/sbin/smartctl'
+BLKID = '/sbin/blkid'
+LSBLK = '/bin/lsblk'
+
 module DiskHandler
 class Disk
   attr_accessor :name, :type, :size, :model, :state, :id, :number, :version, :partitions
@@ -32,7 +37,7 @@ class Disk
   end
 
   def get_smart_info
-    `smartctl -i /dev/#{name}`
+    `#{SMARTCTL} -i /dev/#{name}`
   end
 
   # Is the device SMART capable and enabled
@@ -44,7 +49,7 @@ class Disk
   # Check the SMART health
   #
   def check_health!
-    output = `sudo smartctl -H #{device_path}`
+    output = `#{SMARTCTL} -H #{device_path}`
     @smart_healthy = !output.scan(/PASSED/).empty?
     @health_output = output
   end
@@ -60,7 +65,7 @@ class Disk
   # Checks if disk is capable
   #
   def check_smart_capability!
-    output = `sudo smartctl -i #{device_path}`
+    output = `#{SMARTCTL} -i #{device_path}`
     @smart_available = !output.scan(/SMART support is: Available/).empty?
     @smart_enabled = !output.scan(/SMART support is: Enabled/).empty?
     @capability_output = output
@@ -105,7 +110,7 @@ class Partition
   end
 
   def blkid
-    response = `blkid #{name}`
+    response = `#{BLKID} #{name}`
     self.fs = $?.exitstatus == 0
     # puts "FS: #{fs}"
     # puts response
@@ -143,7 +148,7 @@ class Parser
 
   def scan_disks
      ds = []
-    `lsblk -Pbdo NAME,TYPE,SIZE,MODEL,STATE`.each_line do |line|
+    `#{LSBLK} -Pbdo NAME,TYPE,SIZE,MODEL,STATE`.each_line do |line|
       ds << Disk.new(line)
     end
     ds
